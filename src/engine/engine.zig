@@ -16,7 +16,7 @@ pub const EngineError = error {
 
 
 pub const Engine = struct {
-    board:      *Board,
+    board:      Board,
     gamet:      ?u64,
     timerw:     ?std.time.Timer,
     timerb:     ?std.time.Timer,
@@ -88,22 +88,20 @@ pub const Engine = struct {
         }
     }
 
-    fn inputMove(self: *Self, user_input: *[]const u8, comptime debug: bool) EngineError!void {
+    pub fn inputMove(self: *Self, user_input: []const u8, comptime debug: bool) EngineError!void {
         if (user_input.len != 4) {
             if(debug) Self.inputErrorMsg();
             return error.InvalidInput;
         } else {
-            const l1 = Self.isBoardLetter(user_input.*[0]);
-            const d2 = Self.isBoardDigit(user_input.*[1]);
-            const l3 = Self.isBoardLetter(user_input.*[2]);
-            const d4 = Self.isBoardDigit(user_input.*[3]);
+            const l1 = Self.isBoardLetter(user_input[0]);
+            const d2 = Self.isBoardDigit(user_input[1]);
+            const l3 = Self.isBoardLetter(user_input[2]);
+            const d4 = Self.isBoardDigit(user_input[3]);
 
             if (l1 and d2 and l3 and d4) {
-                const src: Pos = .{ .x = l1, .y = d2 };
-                const dst: Pos = .{ .x = l3, .y = d4 };
-                const move: Move = .{ .src = src, .dst = dst };
+                const move = Self.parseMove(user_input);
                 if(!self.basicMoveValidation(move, self.curturn)) return error.InvalidInput;
-                self.board.movePiece(move, debug) catch |err| return err;
+                self.board.movePiece(move) catch |err| return err;
             } else {
                 if(debug) Self.inputErrorMsg();
                 return error.InvalidInput;
@@ -119,11 +117,11 @@ pub const Engine = struct {
         // UTF-8 and ASCII are back-compatible so that I've been counting in ASCII
         for (move, 0..4) |char, i| {
             if (i % 2 == 0) {
-                if (i == 0) src.c = char - 97;
-                if (i == 2) dst.c = char - 97;
+                if (i == 0) src.x = char - 97;
+                if (i == 2) dst.x = char - 97;
             } else {
-                if (i == 1) src.r = char - 49;
-                if (i == 3) dst.r = char - 49;
+                if (i == 1) src.y = char - 49;
+                if (i == 3) dst.y = char - 49;
             }
         }
         return .{ .src = src, .dst = dst };

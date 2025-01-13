@@ -46,10 +46,15 @@ pub const Cell = struct {
     const Self = @This();
 
     pub fn piece(comptime T: PType, comptime C: Color) Self {
-        return Self { .piece = Piece{
-            .ptype = T,
-            .pside = C,
-        } };
+        return Self {
+            .piece = Piece{
+                .who    = T,
+                .color  = C,
+                .moved  = false,
+            },
+            .abb = false,
+            .abw = false,
+        };
     }
 };
 /// # Fields
@@ -81,7 +86,7 @@ pub const Board = struct {
                         Cell.piece(.rook, side),    Cell.piece(.knight, side),
                         Cell.piece(.bishop, side),  Cell.piece(.queen, side),
                         Cell.piece(.king, side),    Cell.piece(.bishop, side),
-                        Cell.piece(.knight, side),  Cell.piece(.rool, side),
+                        Cell.piece(.knight, side),  Cell.piece(.rook, side),
                     };
                 },
                 1 => { // white pawns

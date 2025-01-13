@@ -1,4 +1,5 @@
 const module_board = @import("board.zig");
+const std = @import("std");
 const Move = module_board.Move;
 const Board = module_board.Board;
 const Pos = module_board.Pos;
@@ -59,6 +60,55 @@ pub const Piece = struct {
     }
 
 
+    pub fn print(self: *Self) void {
+        const stdout_file = std.io.getStdOut().writer();
+        var bw = std.io.bufferedWriter(stdout_file);
+        const stdout = bw.writer();
+        switch (self.who) {
+            .pawn => {
+                if (self.color == Color.white) {
+                    stdout.print("♟ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♙ ", .{}) catch unreachable;
+                }
+            },
+            .bishop => {
+                if (self.color == Color.white) {
+                    stdout.print("♝ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♗ ", .{}) catch unreachable;
+                }
+            },
+            .knight => {
+                if (self.color == Color.white) {
+                    stdout.print("♞ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♘ ", .{}) catch unreachable;
+                }
+            },
+            .king => {
+                if (self.color == Color.white) {
+                    stdout.print("♚ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♔ ", .{}) catch unreachable;
+                }
+            },
+            .queen => {
+                if (self.color == Color.white) {
+                    stdout.print("♛ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♕ ", .{}) catch unreachable;
+                }
+            },
+            .rook => {
+                if (self.color == Color.white) {
+                    stdout.print("♜ ", .{}) catch unreachable;
+                } else {
+                    stdout.print("♖ ", .{}) catch unreachable;
+                }
+            },
+        }
+    }
 
 
     /// Mark cells attacked by rook
