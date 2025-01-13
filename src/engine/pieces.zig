@@ -89,7 +89,7 @@ pub const Piece = struct {
     fn pawnMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
         const direction = if (self.color == .white) -1 else 1;
 
-        for ([_]i8{ -1, 1 }) |dx| {
+        inline for ([_]i8{ -1, 1 }) |dx| {
             const newX = @as(i16, pos.x) + @as(i16, dx);
             const newY = @as(i16, pos.y) + @as(i16, direction);
 
@@ -121,7 +121,7 @@ pub const Piece = struct {
             .{ -1, 2 }, .{ -1, -2 },
         };
 
-        for (knightMoves) |move| {
+        inline for (knightMoves) |move| {
             const newX = @as(i16, pos.x) + @as(i16, move.dx);
             const newY = @as(i16, pos.y) + @as(i16, move.dy);
 
@@ -135,8 +135,8 @@ pub const Piece = struct {
 
     /// Mark diagonal cells
     fn markDiagonalCells(self: *const Self, board: *const Board, pos: Pos) void {
-        for(0..2) |i| {
-            for(0..2) |j| {
+        inline for(0..2) |i| {
+            inline for(0..2) |j| {
                 const y_direction = if(i%2 == 0) 1 else -1;
                 const x_direction = if(j%2 != 0) 1 else -1;
 
@@ -156,7 +156,7 @@ pub const Piece = struct {
     /// Mark straight cells
     fn markStraightCells(self: *const Self, board: *const Board, pos: Pos) void {
         // mark horizontal
-        for (0..2) |i| {
+        inline for (0..2) |i| {
             const x_direction = if (i == 0) 1 else -1;
             var k: i16 = 1;
             while (true) : (k += 1) {
@@ -168,7 +168,7 @@ pub const Piece = struct {
             }
         }
         // mark vertical
-        for (0..2) |i| {
+        inline for (0..2) |i| {
             const y_direction = if (i == 0) 1 else -1;
             var k: i16 = 1;
             while (true) : (k += 1) {

@@ -72,7 +72,7 @@ pub const Board = struct {
     }
     /// Reseting the board to initial state.
     pub fn reset(self: *Self) void {
-        for (&self.board, 0..8) |*row, y| {
+        inline for (&self.board, 0..8) |*row, y| {
             switch (y) {
                 0 => { // while cool pieces
                     const side = Color.white;
@@ -85,13 +85,13 @@ pub const Board = struct {
                 },
                 1 => { // white pawns
                     const side = .white;
-                    for (row) |*square| {
+                    inline for (row) |*square| {
                         square.* = Cell.piece(.pawn, side);
                     }
                 },
                 6 => { // black pawns
                     const side = .black;
-                    for (row) |*square| {
+                    inline for (row) |*square| {
                         square.* = Cell.piece(.pawn, side);
                     }
                 },
@@ -105,7 +105,7 @@ pub const Board = struct {
                     };
                 },
                 else => { // nulls
-                    for (row) |*square| {
+                    inline for (row) |*square| {
                         square.piece = null;
                     }
                 },
@@ -113,14 +113,77 @@ pub const Board = struct {
         }
     }
     /// Moves pieces without checking they can or no.
-    fn movePiece(self: *Self, move: Move) bool {
+    pub fn movePiece(self: *Self, move: Move) bool {
         const src_cell = &self.board[move.src.y][move.src.x];
         if(src_cell.piece == null) return false;
         return src_cell.piece.?.moveChecked(&self.board, move);
     }
+
     /// Updating Cells attack field. Call it after every
     /// move, so king can know he's checked or checkmated
-    fn updateAttackFields(self: *Self) void {
-        _ = self;
+    pub fn updateAttackFields(self: *Self) void {
+        // iterate through all cells and set them to not attacked
+        inline for(0..8) |y| {
+            inline for(0..8) |x| {
+                const cell = &self.board[x][y];
+                cell.abb == false;
+                cell.abw == false;
+            }
+        }
+        // iterate through all cells and call piece markattacked method
+        inline for(0..8) |y| {
+            inline for(0..8) |x| {
+                const cell = &self.board[x][y];
+                if(cell.piece != null) {
+                    cell.piece.?.markAttackedCells(&self.board, .{x, y});
+                }
+            }
+        }
     }
+
+    pub fn isKingChecked(self: *Self, king: *Piece, pos: Pos) bool {
+        if(king.color == .white) return self.board[pos.y][pos.x].abb
+        else return self.board[pos.y][pos.x].abw;
+    }
+
+    pub fn isCheckmate(self: *Self, king: *Piece, pos: Pos) bool {
+        const king_moves = [_][2]i8{
+            .{ 1, 0 }, .{ 1, 1 }, .{ 0, 1 }, .{ -1, 1 },
+            .{ -1, 0 }, .{ -1, -1 }, .{ 0, -1 }, .{ 1, -1 },
+        };
+
+        const color = king.color;
+        var checkmated = true;
+        for (king_moves) |mov| {
+            const newX = @as(i16, pos.x) + @as(i16, mov[0]);
+            const newY = @as(i16, pos.y) + @as(i16, mov[1]);
+
+            if (newX >= 0 and newX <= 7 and newY >= 0 and newY <= 7) {
+                const cell = &self.board[@intCast(newY)][@intCast(newX)];
+                if(cell.piece == null) {
+                    if(color == .white) {
+                        checkmated = checkmated and cell.abb;
+                    } else checkmated = checkmated and cell.abw;
+                }
+            }
+        }
+    }
+
+    fn findKing(self: *Self, color: Color) struct {*Piece, Pos} {
+        const king: *Piece = undefined;
+        const pos: Pos = undefined;
+
+        inline for(0..8) |y| {
+            inline for(0..8) |x| {
+                const piece = &self.board[y][x].piece;
+                if(piece != null and piece.*.?.who == .king and piece.*.?.color == color) {
+                    king = &piece.*.?;
+                    pos = .{.x = x, .y = y};
+                }
+            }
+        }
+
+        return .{ .king = king, .pos = pos };
+    }
+
 };
