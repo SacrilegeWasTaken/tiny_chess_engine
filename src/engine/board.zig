@@ -2,6 +2,7 @@ const pieces = @import("pieces.zig");
 const Piece = pieces.Piece;
 const PType = pieces.PType;
 const Color = pieces.Color;
+const EngineError = @import("engine.zig").EngineError;
 
 /// # Fields
 /// x -> column number
@@ -112,11 +113,11 @@ pub const Board = struct {
             }
         }
     }
-    /// Moves pieces without checking they can or no.
-    pub fn movePiece(self: *Self, move: Move) bool {
+    /// Move piece
+    pub fn movePiece(self: *Self, move: Move) !void {
         const src_cell = &self.board[move.src.y][move.src.x];
-        if(src_cell.piece == null) return false;
-        return src_cell.piece.?.moveChecked(&self.board, move);
+        if(src_cell.piece == null) return error.IllegalMove;
+        if (!(src_cell.piece.?.moveChecked(&self.board, move))) return error.IllegalMove;
     }
 
     /// Updating Cells attack field. Call it after every
