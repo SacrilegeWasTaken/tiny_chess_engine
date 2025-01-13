@@ -32,14 +32,14 @@ pub const Piece = struct {
 
     /// # Checks movement validity for a piece.
     /// Returns *`true`* if move is valid, and false if it's illegal.
-    pub fn canMove(self: *const Self, board: *const Board, move: Move) bool {
+    pub fn moveChecked(self: *const Self, board: *const Board, move: Move) bool {
         switch(self.who) {
-            .rook   => return self.rookCanMove(board, move),
-            .king   => return self.kingCanMove(board, move),
-            .pawn   => return self.pawnCanMove(board, move),
-            .queen  => return self.queenCanMove(board, move),
-            .bishop => return self.bishopCanMove(board, move),
-            .knight => return self.knightCanMove(board, move),
+            .rook   => return self.rookMove(board, move),
+            .king   => return self.kingMove(board, move),
+            .pawn   => return self.pawnMove(board, move),
+            .queen  => return self.queenMove(board, move),
+            .bishop => return self.bishopMove(board, move),
+            .knight => return self.knightMove(board, move),
         }
     }
 
@@ -186,7 +186,7 @@ pub const Piece = struct {
 
 
     /// Knight primary movement rule check.
-    fn knightCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn knightMove(self: *const Self, board: *const Board, move: Move) bool {
         const binding = Move.moveToDxDy(&move);
         const dx = binding[0];
         const dy = binding[1];
@@ -200,7 +200,7 @@ pub const Piece = struct {
     }
 
     /// Bishop primary movement rule check.
-    fn bishopCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn bishopMove(self: *const Self, board: *const Board, move: Move) bool {
         const binding = Move.moveToDxDy(&move);
         const dx = binding[0];
         const dy = binding[1];
@@ -227,7 +227,7 @@ pub const Piece = struct {
     }
 
     /// Queen primary movement rule check.
-    fn queenCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn queenMove(self: *const Self, board: *const Board, move: Move) bool {
         const binding = Move.moveToDxDy(&move);
         const dx = binding[0];
         const dy = binding[1];
@@ -260,7 +260,7 @@ pub const Piece = struct {
     }
 
     /// Not actually checking pawn, because of ultimate second algo.
-    fn pawnCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn pawnMove(self: *const Self, board: *const Board, move: Move) bool {
         const xt: i8 = @intCast(move.dst.x);
         const xf: i8 = @intCast(move.src.x);
         const yt: i8 = @intCast(move.dst.y);
@@ -315,7 +315,7 @@ pub const Piece = struct {
     }
 
     /// King movement rule check.
-    fn kingCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn kingMove(self: *const Self, board: *const Board, move: Move) bool {
         const binding = Move.moveToDxDy(&move);
         const dx = binding[0];
         const dy = binding[1];
@@ -372,7 +372,7 @@ pub const Piece = struct {
     }
 
     /// Rook movement rule check.
-    fn rookCanMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn rookMove(self: *const Self, board: *const Board, move: Move) bool {
         const basic = (move.src.x == move.dst.x) != (move.src.y == move.dst.y);
 
 

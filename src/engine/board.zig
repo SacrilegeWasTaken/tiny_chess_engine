@@ -113,11 +113,10 @@ pub const Board = struct {
         }
     }
     /// Moves pieces without checking they can or no.
-    fn movePiece(self: *Self, from: Pos, to: Pos) void {
-        const src_cell = &self.board[from.y][from.x];
-        const dst_cell = &self.board[to.y][to.x];
-        dst_cell.*.piece = src_cell.piece;
-        src_cell.*.piece = null;
+    fn movePiece(self: *Self, move: Move) bool {
+        const src_cell = &self.board[move.src.y][move.src.x];
+        if(src_cell.piece == null) return false;
+        return src_cell.piece.?.moveChecked(&self.board, move);
     }
     /// Updating Cells attack field. Call it after every
     /// move, so king can know he's checked or checkmated
