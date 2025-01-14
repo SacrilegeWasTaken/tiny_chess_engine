@@ -61,50 +61,47 @@ pub const Piece = struct {
 
 
     pub fn print(self: *Self) void {
-        const stdout_file = std.io.getStdOut().writer();
-        var bw = std.io.bufferedWriter(stdout_file);
-        const stdout = bw.writer();
         switch (self.who) {
             .pawn => {
                 if (self.color == Color.white) {
-                    stdout.print("♟ ", .{}) catch unreachable;
+                    std.debug.print("♟ ", .{});
                 } else {
-                    stdout.print("♙ ", .{}) catch unreachable;
+                    std.debug.print("♙ ", .{});
                 }
             },
             .bishop => {
                 if (self.color == Color.white) {
-                    stdout.print("♝ ", .{}) catch unreachable;
+                    std.debug.print("♝ ", .{});
                 } else {
-                    stdout.print("♗ ", .{}) catch unreachable;
+                    std.debug.print("♗ ", .{});
                 }
             },
             .knight => {
                 if (self.color == Color.white) {
-                    stdout.print("♞ ", .{}) catch unreachable;
+                    std.debug.print("♞ ", .{});
                 } else {
-                    stdout.print("♘ ", .{}) catch unreachable;
+                    std.debug.print("♘ ", .{});
                 }
             },
             .king => {
                 if (self.color == Color.white) {
-                    stdout.print("♚ ", .{}) catch unreachable;
+                    std.debug.print("♚ ", .{});
                 } else {
-                    stdout.print("♔ ", .{}) catch unreachable;
+                    std.debug.print("♔ ", .{});
                 }
             },
             .queen => {
                 if (self.color == Color.white) {
-                    stdout.print("♛ ", .{}) catch unreachable;
+                    std.debug.print("♛ ", .{});
                 } else {
-                    stdout.print("♕ ", .{}) catch unreachable;
+                    std.debug.print("♕ ", .{});
                 }
             },
             .rook => {
                 if (self.color == Color.white) {
-                    stdout.print("♜ ", .{}) catch unreachable;
+                    std.debug.print("♜ ", .{});
                 } else {
-                    stdout.print("♖ ", .{}) catch unreachable;
+                    std.debug.print("♖ ", .{});
                 }
             },
         }

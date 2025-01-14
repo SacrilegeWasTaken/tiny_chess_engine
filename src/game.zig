@@ -9,7 +9,7 @@ pub fn main() !void {
     defer _ = gpa.deinit();
 
     var chess = try Chess.init(allocator);
-    defer chess.deinit(allocator) catch unreachable;
+    defer chess.deinit(allocator);
 
     try chess.startGame(null);
 }

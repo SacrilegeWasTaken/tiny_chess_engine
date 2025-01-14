@@ -27,8 +27,9 @@ pub const ChessCLIGame = struct {
             }
 
             // get move
-            const user_input = try Self.inputMoveNoValidate();
-            try self.engine.inputMove(user_input, true);
+            var user_input = try Self.inputMoveNoValidate();
+            std.debug.print("input: {s}\n", .{user_input});
+            try self.engine.inputMove(&user_input, true);
         }
     }
 
@@ -38,50 +39,44 @@ pub const ChessCLIGame = struct {
        };
     }
 
-    pub fn deinit(self: *Self, allocator: std.mem.Allocator) !void {
+    pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
         Engine.deinit(self.engine, allocator);
     }
 
 
     fn printBoard(self: *Self) void {
-        const stdout_file = std.io.getStdOut().writer();
-        var bw = std.io.bufferedWriter(stdout_file);
-        const stdout = bw.writer();
         for (&self.engine.board.board, 1..9) |*row, i| {
-            stdout.print("{d} ", .{i}) catch unreachable;
+            std.debug.print("{d} ", .{i});
             for (row) |*cell| {
                 if (cell.piece == null) {
-                    stdout.print("▢ ", .{}) catch unreachable;
+                    std.debug.print("▢ ", .{});
                 } else {
                     cell.piece.?.print();
                 }
             }
-            stdout.print("\n", .{}) catch unreachable;
+            std.debug.print("\n", .{});
         }
-        stdout.print("/ a b c d e f g h\n", .{}) catch unreachable;
+        std.debug.print("/ a b c d e f g h\n", .{});
     }
     /// # Algorithm
     /// I used 9 as counter instead of 8 because of integer overflow exeption.
     /// `while (i >= 1) : (i -= 1)` this syntax do decremention after iteration,
     /// so when `i == 0`, function tries to make unsigned type negative.
     fn printWhiteBoard(self: *Self) void {
-        const stdout_file = std.io.getStdOut().writer();
-        var bw = std.io.bufferedWriter(stdout_file);
-        const stdout = bw.writer();
         var i: u8 = 9;
         while (i > 1) : (i -= 1) {
-            stdout.print("{d} ", .{i - 1}) catch unreachable;
+            std.debug.print("{d} ", .{i - 1});
             const row: *[8]Cell = &self.engine.board.board[i - 2];
             for (row) |*cell| {
                 if (cell.piece == null) {
-                    stdout.print("▢ ", .{}) catch unreachable;
+                    std.debug.print("▢ ", .{});
                 } else {
                     cell.piece.?.print();
                 }
             }
-            stdout.print("\n", .{}) catch unreachable;
+            std.debug.print("\n", .{});
         }
-        stdout.print("/ a b c d e f g h\n", .{}) catch unreachable;
+        std.debug.print("/ a b c d e f g h\n", .{});
     }
 
     fn inputMoveNoValidate() ![]const u8 {
@@ -92,12 +87,8 @@ pub const ChessCLIGame = struct {
     }
 
     fn printReturns() void {
-        const stdout_file = std.io.getStdOut().writer();
-        var bw = std.io.bufferedWriter(stdout_file);
-        const stdout = bw.writer();
-
         inline for(0..70) |_| {
-            stdout.print("\r", .{}) catch unreachable;
+            std.debug.print("\r", .{});
         }
     }
 };

@@ -119,7 +119,7 @@ pub const Board = struct {
         }
     }
     /// Move piece
-    pub fn movePiece(self: *Self, move: Move) !void {
+    pub fn movePiece(self: *Self, move: Move) EngineError!void {
         const src_cell = &self.board[move.src.y][move.src.x];
         if(src_cell.piece == null) return error.IllegalMove;
         if (!(src_cell.piece.?.moveChecked(@constCast(self), move))) return error.IllegalMove;

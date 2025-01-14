@@ -50,7 +50,7 @@ pub const Engine = struct {
 
     pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
         self.movhist.deinit();
-        allocator.destroy(&self.board);
+        allocator.destroy(self);
     }
 
     pub fn setTimer(self: *Self, secs: u64) void {
@@ -85,18 +85,27 @@ pub const Engine = struct {
         }
     }
 
-    pub fn inputMove(self: *Self, user_input: []const u8, comptime debug: bool) EngineError!void {
+    pub fn inputMove(self: *Self, user_input: *[]const u8, comptime debug: bool) EngineError!void {
         if (user_input.len != 4) {
             if(debug) Self.inputErrorMsg();
             return error.InvalidInput;
         } else {
-            const l1 = Self.isBoardLetter(user_input[0]);
-            const d2 = Self.isBoardDigit(user_input[1]);
-            const l3 = Self.isBoardLetter(user_input[2]);
-            const d4 = Self.isBoardDigit(user_input[3]);
+            std.debug.print("fuck: {any}\n", .{user_input.*});
+            const l1 = Self.isBoardLetter(user_input.*[0]);
+            std.debug.print("{c}\n", .{user_input.*[0]});
+            std.debug.print("{any}\n", .{l1});
+            const d2 = Self.isBoardDigit(user_input.*[1]);
+            std.debug.print("{c}\n", .{user_input.*[1]});
+            std.debug.print("{any}\n", .{d2});
+            const l3 = Self.isBoardLetter(user_input.*[2]);
+            std.debug.print("{c}\n", .{user_input.*[2]});
+            std.debug.print("{any}\n", .{l3});
+            const d4 = Self.isBoardDigit(user_input.*[3]);
+            std.debug.print("{c}\n", .{user_input.*[3]});
+            std.debug.print("{any}\n", .{d4});
 
             if (l1 and d2 and l3 and d4) {
-                const move = Self.parseMove(user_input);
+                const move = Self.parseMove(user_input.*);
                 if(!self.basicMoveValidation(move, self.curturn)) return error.InvalidInput;
                 self.board.movePiece(move) catch |err| return err;
             } else {
