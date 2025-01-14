@@ -33,7 +33,7 @@ pub const Piece = struct {
 
     /// # Checks movement validity for a piece.
     /// Returns *`true`* if move is valid, and false if it's illegal.
-    pub fn moveChecked(self: *const Self, board: *const Board, move: Move) bool {
+    pub fn moveChecked(self: *Self, board: *Board, move: Move) bool {
         switch(self.who) {
             .rook   => return self.rookMove(board, move),
             .king   => return self.kingMove(board, move),
@@ -48,7 +48,7 @@ pub const Piece = struct {
 
 
     /// # Marking Attacked Cells as attacked.
-    pub fn markAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    pub fn markAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         switch(self.who) {
             .rook   => self.rookMarkAttackedCells(board, pos),
             .king   => self.kingMarkAttackedCells(board, pos),
@@ -112,12 +112,12 @@ pub const Piece = struct {
 
 
     /// Mark cells attacked by rook
-    fn rookMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn rookMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         self.markStraightCells(board, pos);
     }
 
     /// Mark cells attacked by king
-    fn kingMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn kingMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         const kingMoves = [_][2]i8{
             .{ 1, 0 }, .{ 1, 1 }, .{ 0, 1 }, .{ -1, 1 },
             .{ -1, 0 }, .{ -1, -1 }, .{ 0, -1 }, .{ 1, -1 },
@@ -136,7 +136,7 @@ pub const Piece = struct {
     }
 
     /// Mark cells attacked by pawn
-    fn pawnMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn pawnMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         const direction = if (self.color == .white) -1 else 1;
 
         inline for ([_]i8{ -1, 1 }) |dx| {
@@ -152,18 +152,17 @@ pub const Piece = struct {
     }
 
     /// Mark cells attacked by queen
-    fn queenMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn queenMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         self.markDiagonalCells(board, pos);
         self.markStraightCells(board, pos);
     }
 
     /// Mark cells attacked by bishop
-    fn bishopMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn bishopMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         self.markDiagonalCells(board, pos);
     }
-
     /// Mark cells attacked by knight
-    fn knightMarkAttackedCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn knightMarkAttackedCells(self: *Self, board: *Board, pos: Pos) void {
         const knightMoves = [_][2]i8{
             .{ 2, 1 }, .{ 2, -1 },
             .{ -2, 1 }, .{ -2, -1 },
@@ -184,7 +183,7 @@ pub const Piece = struct {
     }
 
     /// Mark diagonal cells
-    fn markDiagonalCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn markDiagonalCells(self: *Self, board: *Board, pos: Pos) void {
         inline for(0..2) |i| {
             inline for(0..2) |j| {
                 const y_direction = if(i%2 == 0) 1 else -1;
@@ -204,7 +203,7 @@ pub const Piece = struct {
     }
 
     /// Mark straight cells
-    fn markStraightCells(self: *const Self, board: *const Board, pos: Pos) void {
+    fn markStraightCells(self: *Self, board: *Board, pos: Pos) void {
         // mark horizontal
         inline for (0..2) |i| {
             const x_direction = if (i == 0) 1 else -1;
@@ -236,8 +235,8 @@ pub const Piece = struct {
 
 
     /// Knight primary movement rule check.
-    fn knightMove(self: *const Self, board: *const Board, move: Move) bool {
-        const binding = Move.moveToDxDy(&move);
+    fn knightMove(self: *Self, board: *Board, move: Move) bool {
+        const binding = Move.moveToDxDy(@constCast(&move));
         const dx = binding[0];
         const dy = binding[1];
         const basic =   @abs(dx) == 2 and @abs(dy) == 1 or
@@ -250,8 +249,8 @@ pub const Piece = struct {
     }
 
     /// Bishop primary movement rule check.
-    fn bishopMove(self: *const Self, board: *const Board, move: Move) bool {
-        const binding = Move.moveToDxDy(&move);
+    fn bishopMove(self: *Self, board: *Board, move: Move) bool {
+        const binding = Move.moveToDxDy(@constCast(&move));
         const dx = binding[0];
         const dy = binding[1];
         const basic = !(@abs(dx) != @abs(dy) or dx == 0 or dy == 0);
@@ -277,8 +276,8 @@ pub const Piece = struct {
     }
 
     /// Queen primary movement rule check.
-    fn queenMove(self: *const Self, board: *const Board, move: Move) bool {
-        const binding = Move.moveToDxDy(&move);
+    fn queenMove(self: *Self, board: *Board, move: Move) bool {
+        const binding = Move.moveToDxDy(@constCast(&move));
         const dx = binding[0];
         const dy = binding[1];
         const adx = @abs(dx);
@@ -310,7 +309,7 @@ pub const Piece = struct {
     }
 
     /// Not actually checking pawn, because of ultimate second algo.
-    fn pawnMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn pawnMove(self: *Self, board: *Board, move: Move) bool {
         const xt: i8 = @intCast(move.dst.x);
         const xf: i8 = @intCast(move.src.x);
         const yt: i8 = @intCast(move.dst.y);
@@ -323,27 +322,27 @@ pub const Piece = struct {
 
         // regular move
         if (dy == 0) {
-            if (side == .white) {
+            if (side.* == .white) {
                 if (dx == 1) {
                     // One square move forward
-                    const res = board.board[xt][yt].piece == null;
+                    const res = board.board[@intCast(xt)][@intCast(yt)].piece == null;
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 } else if (xf == 1 and dx == 2) {
                     // Two square move from initial position
-                    const res = board.board[xf + 1][yf].piece == null and
-                                board.board[xt][yt].piece == null;
+                    const res = board.board[@intCast(xf + 1)][@intCast(yf)].piece == null and
+                                board.board[@intCast(xt)][@intCast(yt)].piece == null;
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 }
             } else { // Side is black
                 if (dx == -1) {
                     // One square move backward
-                    return board.board[xt][yt].piece == null;
+                    return board.board[@intCast(xt)][@intCast(yt)].piece == null;
                 } else if (xf == 6 and dx == -2) {
                     // Two square move from initial position
-                    const res = board.board[xf - 1][yf].piece == null and
-                                board.board[xt][yt].piece == null;
+                    const res = board.board[@intCast(xf - 1)][@intCast(yf)].piece == null and
+                                board.board[@intCast(xt)][@intCast(yt)].piece == null;
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 }
@@ -352,12 +351,12 @@ pub const Piece = struct {
 
         // capture move (diagonal)
         if (@abs(dy) == 1) {
-            if (side == .white) {
-                const res = dx == 1 and board.board[xt][yt].piece != null;
+            if (side.* == .white) {
+                const res = dx == 1 and board.board[@intCast(xt)][@intCast(yt)].piece != null;
                 if(res) Piece.movePieceRaw(board, move);
                 return res;
             } else {
-                const res = dx == -1 and board.board[xt][yt].piece != null;
+                const res = dx == -1 and board.board[@intCast(xt)][@intCast(yt)].piece != null;
                 if(res) Piece.movePieceRaw(board, move);
                 return res;
             }
@@ -365,18 +364,18 @@ pub const Piece = struct {
     }
 
     /// King movement rule check.
-    fn kingMove(self: *const Self, board: *const Board, move: Move) bool {
-        const binding = Move.moveToDxDy(&move);
+    fn kingMove(self: *Self, board: *Board, move: Move) bool {
+        const binding = Move.moveToDxDy(@constCast(&move));
         const dx = binding[0];
         const dy = binding[1];
         const basic = @abs(dx) < 2 and @abs(dy) < 2;
         const dst_cell = &board.board[move.dst.y][move.dst.x];
 
         // castling movement check
-        const dst_is_rook = undefined;
+        var dst_is_rook: bool = undefined;
         if(dst_cell.piece != null) {
-            if(dst_cell.piece.?.who == .rook) dst_cell = true else dst_cell = false;
-        } else dst_cell = false;
+            if(dst_cell.piece.?.who == .rook) dst_is_rook = true else dst_is_rook = false;
+        } else dst_is_rook = false;
 
         // process castling
         if (dst_is_rook) {
@@ -403,7 +402,7 @@ pub const Piece = struct {
 
             // Rook moving
             board.board[move.src.y][rook_new_x].piece = board.board[move.src.y][move.dst.x].piece;
-            board.board[move.src.y][move.dst.x] = null;
+            board.board[move.src.y][move.dst.x].piece = null;
 
             return true;
         }
@@ -422,7 +421,7 @@ pub const Piece = struct {
     }
 
     /// Rook movement rule check.
-    fn rookMove(self: *const Self, board: *const Board, move: Move) bool {
+    fn rookMove(self: *Self, board: *Board, move: Move) bool {
         const basic = (move.src.x == move.dst.x) != (move.src.y == move.dst.y);
 
 
@@ -454,7 +453,7 @@ pub const Piece = struct {
 
 
     /// Check legality of source and destination cells.
-    fn legalCells(self: *const Self, board: *const Board, move: Move) bool {
+    fn legalCells(self: *Self, board: *Board, move: Move) bool {
         const from_square = &board.board[move.src.y][move.src.x];
         const to_square = &board.board[move.dst.y][move.dst.x];
 
@@ -468,9 +467,10 @@ pub const Piece = struct {
         if (to_square.piece) |piece| {
             if (piece.color == self.color) return false;
         }
+        return true;
     }
 
-    fn movePieceRaw(board: *const Board, move: Move) void {
+    fn movePieceRaw(board: *Board, move: Move) void {
         const src_cell = &board.board[move.src.y][move.src.x];
         const dst_cell = &board.board[move.dst.y][move.dst.x];
         dst_cell.*.piece = src_cell.piece;

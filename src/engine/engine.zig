@@ -5,7 +5,6 @@ const Move = fileboard.Move;
 const Pos = fileboard.Pos;
 const Color = @import("pieces.zig").Color;
 
-
 pub const EngineError = error {
     AllocationError,
     InvalidInput,
@@ -13,7 +12,6 @@ pub const EngineError = error {
     TimerNotSet,
     NoSupportedClock,
 };
-
 
 pub const Engine = struct {
     board:      Board,
@@ -30,7 +28,6 @@ pub const Engine = struct {
 
 
     const Self = @This();
-
 
 
 
@@ -144,9 +141,9 @@ pub const Engine = struct {
     fn basicMoveValidation(self: *Self, move: Move, color: Color) bool {
         const moving_piece = &self.board.board[move.src.y][move.src.x].piece;
         const destin_square = &self.board.board[move.dst.y][move.dst.x].piece;
-        if(moving_piece == null) return false;
+        if(moving_piece.* == null) return false;
         if(moving_piece.*.?.color != color) return false;
-        if(destin_square == null) return true;
+        if(destin_square.* == null) return true;
         if(destin_square.*) |*piece| {
             if(piece.color == color) return false;
         }

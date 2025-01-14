@@ -122,7 +122,7 @@ pub const Board = struct {
     pub fn movePiece(self: *Self, move: Move) !void {
         const src_cell = &self.board[move.src.y][move.src.x];
         if(src_cell.piece == null) return error.IllegalMove;
-        if (!(src_cell.piece.?.moveChecked(&self.board, move))) return error.IllegalMove;
+        if (!(src_cell.piece.?.moveChecked(@constCast(self), move))) return error.IllegalMove;
     }
 
     /// Updating Cells attack field. Call it after every
