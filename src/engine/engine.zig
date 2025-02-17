@@ -76,7 +76,7 @@ pub const Engine = struct {
         }
     }
 
-    // Works for current turn
+    /// Works for current turn
     pub fn checkTimeIsUp(self: *Self) EngineError!bool {
         if(self.gamet == null or self.wtsum == null or self.btsum == null)
             return error.TimerNotSet;
@@ -87,20 +87,24 @@ pub const Engine = struct {
         }
     }
 
-    pub fn inputMove(self: *Self, user_input: *[]const u8, comptime debug: bool) EngineError!void {
-        if (user_input.len != 4) {
+    /// Inputing move into Engine. Switches the side if move is ok.
+    /// - `input` is 4 byte length string slice containing input move in format `d2d4` for example.
+    /// - `debug` is a marker for debug stdout logging.
+    pub fn inputMove(self: *Self, input: *[]const u8, comptime debug: bool) EngineError!void {
+        if (input.len != 4) {
             if(debug) Self.inputErrorMsg();
             return error.InvalidInput;
         } else {
-            const l1 = Self.isBoardLetter(user_input.*[0]);
-            const d2 = Self.isBoardDigit(user_input.*[1]);
-            const l3 = Self.isBoardLetter(user_input.*[2]);
-            const d4 = Self.isBoardDigit(user_input.*[3]);
+            const l1 = Self.isBoardLetter(input.*[0]);
+            const d2 = Self.isBoardDigit(input.*[1]);
+            const l3 = Self.isBoardLetter(input.*[2]);
+            const d4 = Self.isBoardDigit(input.*[3]);
 
             if (l1 and d2 and l3 and d4) {
-                const move = Self.parseMove(user_input.*);
+                const move = Self.parseMove(input.*);
                 if(!self.basicMoveValidation(move, self.curturn)) return error.InvalidInput;
                 self.board.movePiece(move) catch |err| return err;
+                if(self.curturn == .white) self.curturn = .black else self.curturn = .white;
             } else {
                 if(debug) Self.inputErrorMsg();
                 return error.InvalidInput;

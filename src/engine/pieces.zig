@@ -32,7 +32,6 @@ pub const Piece = struct {
     /// # Checks movement validity for a piece.
     /// Returns *`true`* if move is valid, and false if it's illegal.
     pub fn moveChecked(self: *Self, board: *Board, move: Move) bool {
-        std.debug.print("Who: {any}\n", .{self.who});
         switch(self.who) {
             .rook   => return self.rookMove(board, move),
             .king   => return self.kingMove(board, move),
@@ -282,6 +281,7 @@ pub const Piece = struct {
                         (adx != 0 and ady == 0) or  // horizonal move
                         (adx == ady);               // diagonal move
 
+        std.log.debug("QUEEN MOVE -- dx: {d}, dy: {d}, basic: {any}", .{dx, dy, basic});
 
         if (!(basic and self.legalCells(board, move))) return false;
 
@@ -314,10 +314,13 @@ pub const Piece = struct {
         const dy = yt - yf;
         const side = &self.color;
 
+        std.log.debug("PAWN MOVE -- xt: {d}, xf: {d}, yt: {d}, yf: {d}, dx: {d}, dy: {d}", .{xt, xf, yt, yf, dx, dy});
+
         if(!self.legalCells(board, move)) return false;
 
         // regular move
         if (dx == 0) {
+            std.log.debug("PAWN MOVE -- regular move, color: {any}", .{side.*});
             if (side.* == .white) {
                 if (dy == 1) {
                     // One square move forward
@@ -335,8 +338,10 @@ pub const Piece = struct {
             } else { // Side is black
                 if (dy == -1) {
                     // One square move backward
-                    return board.board[@intCast(xt)][@intCast(yt)].piece == null;
-                } else if (xf == 6 and dx == -2) {
+                    const res = board.board[@intCast(xt)][@intCast(yt)].piece == null;
+                    if (res) Piece.movePieceRaw(board, move);
+                    return res;
+                } else if (yf == 6 and dy == -2) {
                     // Two square move from initial position
                     const res = board.board[@intCast(xf - 1)][@intCast(yf)].piece == null and
                                 board.board[@intCast(xt)][@intCast(yt)].piece == null;
@@ -348,6 +353,7 @@ pub const Piece = struct {
 
         // capture move (diagonal)
         if (@abs(dx) == 1) {
+            std.log.debug("PAWN MOVE -- capture (diagonal) move, color: {any}", .{side.*});
             if (side.* == .white) {
                 const res = dx == 1 and board.board[@intCast(xt)][@intCast(yt)].piece != null;
                 if(res) Piece.movePieceRaw(board, move);
