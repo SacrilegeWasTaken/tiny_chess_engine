@@ -13,6 +13,7 @@ pub const EngineError = error {
     NoSupportedClock,
 };
 
+
 pub const Engine = struct {
     board:      Board,
     gamet:      ?u64,
@@ -34,6 +35,7 @@ pub const Engine = struct {
     pub fn init(allocator: std.mem.Allocator) EngineError!*Self {
         const movhist = std.ArrayList([]const u8).init(allocator);
         var engine = allocator.create(Self) catch return error.AllocationError;
+
         engine.board = Board.create();
         engine.movhist = movhist;
         engine.curturn = .white;
@@ -90,19 +92,10 @@ pub const Engine = struct {
             if(debug) Self.inputErrorMsg();
             return error.InvalidInput;
         } else {
-            std.debug.print("fuck: {any}\n", .{user_input.*});
             const l1 = Self.isBoardLetter(user_input.*[0]);
-            std.debug.print("{c}\n", .{user_input.*[0]});
-            std.debug.print("{any}\n", .{l1});
             const d2 = Self.isBoardDigit(user_input.*[1]);
-            std.debug.print("{c}\n", .{user_input.*[1]});
-            std.debug.print("{any}\n", .{d2});
             const l3 = Self.isBoardLetter(user_input.*[2]);
-            std.debug.print("{c}\n", .{user_input.*[2]});
-            std.debug.print("{any}\n", .{l3});
             const d4 = Self.isBoardDigit(user_input.*[3]);
-            std.debug.print("{c}\n", .{user_input.*[3]});
-            std.debug.print("{any}\n", .{d4});
 
             if (l1 and d2 and l3 and d4) {
                 const move = Self.parseMove(user_input.*);

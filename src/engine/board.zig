@@ -47,7 +47,7 @@ pub const Cell = struct {
 
     pub fn piece(comptime T: PType, comptime C: Color) Self {
         return Self {
-            .piece = Piece{
+            .piece = Piece {
                 .who    = T,
                 .color  = C,
                 .moved  = false,

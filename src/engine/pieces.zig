@@ -29,11 +29,10 @@ pub const Piece = struct {
     const Self = @This();
 
 
-
-
     /// # Checks movement validity for a piece.
     /// Returns *`true`* if move is valid, and false if it's illegal.
     pub fn moveChecked(self: *Self, board: *Board, move: Move) bool {
+        std.debug.print("Who: {any}\n", .{self.who});
         switch(self.who) {
             .rook   => return self.rookMove(board, move),
             .king   => return self.kingMove(board, move),
@@ -318,22 +317,23 @@ pub const Piece = struct {
         if(!self.legalCells(board, move)) return false;
 
         // regular move
-        if (dy == 0) {
+        if (dx == 0) {
             if (side.* == .white) {
-                if (dx == 1) {
+                if (dy == 1) {
                     // One square move forward
                     const res = board.board[@intCast(xt)][@intCast(yt)].piece == null;
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
-                } else if (xf == 1 and dx == 2) {
+                } else if (yf == 1 and dy == 2) {
                     // Two square move from initial position
+                    //
                     const res = board.board[@intCast(xf + 1)][@intCast(yf)].piece == null and
                                 board.board[@intCast(xt)][@intCast(yt)].piece == null;
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 }
             } else { // Side is black
-                if (dx == -1) {
+                if (dy == -1) {
                     // One square move backward
                     return board.board[@intCast(xt)][@intCast(yt)].piece == null;
                 } else if (xf == 6 and dx == -2) {
@@ -347,7 +347,7 @@ pub const Piece = struct {
         }
 
         // capture move (diagonal)
-        if (@abs(dy) == 1) {
+        if (@abs(dx) == 1) {
             if (side.* == .white) {
                 const res = dx == 1 and board.board[@intCast(xt)][@intCast(yt)].piece != null;
                 if(res) Piece.movePieceRaw(board, move);

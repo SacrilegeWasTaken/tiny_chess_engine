@@ -27,8 +27,8 @@ pub const ChessCLIGame = struct {
             }
 
             // get move
-            var user_input = try Self.inputMoveNoValidate();
-            std.debug.print("input: {s}\n", .{user_input});
+            var buffer: [1024]u8 = undefined;
+            var user_input = Self.inputMoveNoValidate(&buffer);
             try self.engine.inputMove(&user_input, true);
         }
     }
@@ -79,11 +79,17 @@ pub const ChessCLIGame = struct {
         std.debug.print("/ a b c d e f g h\n", .{});
     }
 
-    fn inputMoveNoValidate() ![]const u8 {
+    fn inputMoveNoValidate(buffer: []u8) []const u8 {
         const stdin = std.io.getStdIn().reader();
-        var buffer: [80]u8 = undefined;
-        const data: []u8 = try stdin.readUntilDelimiter(&buffer, '\n');
-        return data;
+        var output: []u8 = undefined;
+        while (true) {
+            output = stdin.readUntilDelimiter(buffer, '\n') catch {
+                std.debug.print("Something went wrong with the input, try again!", .{});
+                continue;
+            };
+            break;
+        }
+        return output;
     }
 
     fn printReturns() void {
