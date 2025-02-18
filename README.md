@@ -21,8 +21,13 @@ pub const checkTimeIsUp = Engine.checkTimeIsUp;
 - Small binary
 - Fast perfomance
 - Togglable CLI inteface for the game
+- GUI interface for the game
 - Memory safety
 - Panic safety
 
 # Current progress
 ***[###############--------------------------]***
+
+# Contacts
+Write me here, if you want to contribute.\
+TG: @vietnam_veteran

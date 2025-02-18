@@ -1,4 +1,5 @@
 const engine = @import("engine/engine.zig");
+const tests = @import("tests/tests.zig");
 
 // TYPES
 pub const Engine = engine.Engine;
