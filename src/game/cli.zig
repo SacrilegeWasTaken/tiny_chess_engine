@@ -11,6 +11,10 @@ pub const ChessCLIGame = struct {
     const Self = @This();
     const printBlackBoard = printBoard;
 
+
+
+    /// Starts game, initializing timer if timer value is set.\
+    /// Then running a gameloop with board printing and getting moves.
     pub fn startGame(self: *Self, timer: ?u64) !void {
         if(timer != null) {
             self.engine.setTimer(timer.?);
@@ -27,23 +31,38 @@ pub const ChessCLIGame = struct {
             }
 
             // get move
-            var buffer: [1024]u8 = undefined;
-            var user_input = Self.inputMoveNoValidate(&buffer);
-            try self.engine.inputMove(&user_input, true);
+            while (true) {
+                var buffer: [8]u8 = undefined;
+                var user_input = Self.inputMoveNoValidate(&buffer);
+                self.engine.inputMove(&user_input, true) catch continue;
+                break;
+            }
         }
     }
 
+
+
+    /// Initializing `ChessCLIGame` struct.
     pub fn init(allocator: std.mem.Allocator) !Self {
        return Self {
            .engine = try Engine.init(allocator)
        };
     }
 
+
+
+    /// Deinitializing `ChessCLIGame` struct.
     pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
         Engine.deinit(self.engine, allocator);
     }
 
 
+
+    /// # Print the board for black side
+    /// # Algorithm
+    /// I used 9 as counter instead of 8 because of integer overflow exeption.
+    /// `while (i >= 1) : (i -= 1)` this syntax do decremention after iteration,
+    /// so when `i == 0`, function tries to make unsigned type negative.
     fn printBoard(self: *Self) void {
         for (&self.engine.board.board, 1..9) |*row, i| {
             std.debug.print("{d} ", .{i});
@@ -58,6 +77,10 @@ pub const ChessCLIGame = struct {
         }
         std.debug.print("/ a b c d e f g h\n", .{});
     }
+
+
+
+    /// # Print the board for white side
     /// # Algorithm
     /// I used 9 as counter instead of 8 because of integer overflow exeption.
     /// `while (i >= 1) : (i -= 1)` this syntax do decremention after iteration,
@@ -79,6 +102,9 @@ pub const ChessCLIGame = struct {
         std.debug.print("/ a b c d e f g h\n", .{});
     }
 
+
+
+    /// Getting move without validation
     fn inputMoveNoValidate(buffer: []u8) []const u8 {
         const stdin = std.io.getStdIn().reader();
         var output: []u8 = undefined;
@@ -90,11 +116,5 @@ pub const ChessCLIGame = struct {
             break;
         }
         return output;
-    }
-
-    fn printReturns() void {
-        inline for(0..70) |_| {
-            std.debug.print("\r", .{});
-        }
     }
 };

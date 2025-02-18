@@ -1,10 +1,14 @@
-const std = @import("std");
-const testing = std.testing;
+const engine = @import("engine/engine.zig");
 
-export fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
+// TYPES
+pub const Engine = engine.Engine;
+pub const EngineError = engine.EngineError;
 
-test "basic add functionality" {
-    try testing.expect(add(3, 7) == 10);
-}
+// FUNCTIONS
+pub const init = Engine.init;
+pub const deinit = Engine.deinit;
+pub const setTimer = Engine.setTimer;
+pub const inputMove = Engine.inputMove;
+pub const startTimer = Engine.startTimer;
+pub const switchTimer = Engine.switchTimer;
+pub const checkTimeIsUp = Engine.checkTimeIsUp;

@@ -325,13 +325,14 @@ pub const Piece = struct {
                 if (dy == 1) {
                     // One square move forward
                     const res = board.board[@intCast(xt)][@intCast(yt)].piece == null;
+                    std.log.debug("PAWN MOVE -- res: {any}", .{res});
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 } else if (yf == 1 and dy == 2) {
                     // Two square move from initial position
-                    //
                     const res = board.board[@intCast(xf + 1)][@intCast(yf)].piece == null and
                                 board.board[@intCast(xt)][@intCast(yt)].piece == null;
+                    std.log.debug("PAWN MOVE -- res: {any}", .{res});
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 }
@@ -339,12 +340,14 @@ pub const Piece = struct {
                 if (dy == -1) {
                     // One square move backward
                     const res = board.board[@intCast(xt)][@intCast(yt)].piece == null;
+                    std.log.debug("PAWN MOVE -- res: {any}", .{res});
                     if (res) Piece.movePieceRaw(board, move);
                     return res;
                 } else if (yf == 6 and dy == -2) {
                     // Two square move from initial position
                     const res = board.board[@intCast(xf - 1)][@intCast(yf)].piece == null and
                                 board.board[@intCast(xt)][@intCast(yt)].piece == null;
+                    std.log.debug("PAWN MOVE -- res: {any}", .{res});
                     if(res) Piece.movePieceRaw(board, move);
                     return res;
                 }
@@ -459,7 +462,7 @@ pub const Piece = struct {
     fn legalCells(self: *Self, board: *Board, move: Move) bool {
         const from_square = &board.board[move.src.y][move.src.x];
         const to_square = &board.board[move.dst.y][move.dst.x];
-
+        std.log.debug("Move piece  ", .{});
         // check from square has a piece
         if(from_square.piece == null) return false;
         // check from square is ours
