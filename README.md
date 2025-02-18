@@ -2,16 +2,18 @@
 This repository provides you simple and fast API for chess engine.
 API includes `Engine` struct and some member functions.
 ```zig
-// allocate the Engine on the heap
-pub fn init(allocator: std.mem.Allocator) !*Self;
-// free the memory
-pub fn deinit(self: *Self, allocator: std.mem.Allocator) void;
-// sets the timer for the game
-pub fn setTimer(self: *Self, secs: u64) !void;
-// starts the game
-pub fn startGame(self: *Self) !void;
-// input move (no need in CLI mode)
-pub fn inputMove(self: *Self, mov: []const u8) !void;
+// TYPES
+pub const Engine = engine.Engine;
+pub const EngineError = engine.EngineError;
+
+// FUNCTIONS
+pub const init = Engine.init;
+pub const deinit = Engine.deinit;
+pub const setTimer = Engine.setTimer;
+pub const inputMove = Engine.inputMove;
+pub const startTimer = Engine.startTimer;
+pub const switchTimer = Engine.switchTimer;
+pub const checkTimeIsUp = Engine.checkTimeIsUp;
 ```
 
 # Main features are:
@@ -23,4 +25,4 @@ pub fn inputMove(self: *Self, mov: []const u8) !void;
 - Panic safety
 
 # Current progress
-***[############-----------------------------]***
+***[###############--------------------------]***
